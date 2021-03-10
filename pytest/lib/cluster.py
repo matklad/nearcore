@@ -583,10 +583,10 @@ class AzureNode(BaseNode):
             if json_res['stderr'] != '':
                 print(json_res['stderr'])
                 sys.exit()
-            
+
 
 class PreexistingCluster():
-        
+
     def __init__(self, num_nodes, node_dirs, release):
         self.already_cleaned_up = False
         if os.path.isfile(os.path.expanduser('~/.nayduck')):
@@ -660,7 +660,7 @@ class PreexistingCluster():
         if self.already_cleaned_up:
             sys.exit(0)
         print()
-        post = {'request_id': self.request_id, 'token': self.token} 
+        post = {'request_id': self.request_id, 'token': self.token}
         print("Starting cleaning up remote instances.")
         res = requests.post('http://40.112.59.229:5000/cancel_the_run', json=post)
         json_res = json.loads(res.text)
@@ -782,7 +782,7 @@ def init_cluster(num_nodes, num_observers, num_shards, config,
         # ips of azure nodes with build neard but not yet started.
         global preexisting
         preexisting = PreexistingCluster(num_nodes + num_observers, node_dirs, config['release'])
-    
+
     return near_root, node_dirs
 
 
@@ -918,7 +918,7 @@ def start_bridge(nodes, start_local_ethereum=True, handle_contracts=True, handle
 DEFAULT_CONFIG = {
     'local': True,
     'preexist': False,
-    'near_root': '../target/debug/',
+    'near_root': '../target/release/',
     'binary_name': 'neard',
     'release': False,
     'bridge': {

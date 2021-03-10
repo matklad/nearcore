@@ -477,7 +477,7 @@ pub unsafe fn sum_n() {
 
     let mut sum = 0u64;
     for i in 0..n {
-        sum += i;
+        sum = sum.wrapping_add(i.wrapping_mul(i) ^ i);
     }
 
     let data = sum.to_le_bytes();

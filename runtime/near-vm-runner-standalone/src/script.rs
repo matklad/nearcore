@@ -218,3 +218,43 @@ fn vm_script_smoke_test() {
     let expected = ReturnData::Value(4950u64.to_le_bytes().to_vec());
     assert_eq!(ret, expected);
 }
+
+#[test]
+fn long_computation() {
+    crate::tracing_timings::enable();
+
+    for &vm_kind in &[VMKind::Wasmer0, VMKind::Wasmer1] {
+        eprintln!("vm kind: {:?}", vm_kind);
+        let mut script = Script::default();
+        script.vm_kind(vm_kind);
+        script.contract_cache(true);
+        let contract = script
+            .contract_from_file(Path::new("../near-vm-runner/tests/res/test_contract_rs.wasm"));
+        script.step(contract, "sum_n").input(1000000u64.to_le_bytes().to_vec()).repeat(3);
+        for (_outcome, err) in script.run().outcomes {
+            if let Some(err) = err {
+                println!("{}", err);
+            }
+        }
+    }
+}
+
+#[test]
+fn short_computation() {
+    crate::tracing_timings::enable();
+
+    for &vm_kind in &[VMKind::Wasmer0, VMKind::Wasmer1] {
+        eprintln!("vm kind: {:?}", vm_kind);
+        let mut script = Script::default();
+        script.vm_kind(vm_kind);
+        script.contract_cache(true);
+        let contract = script
+            .contract_from_file(Path::new("../near-vm-runner/tests/res/test_contract_rs.wasm"));
+        script.step(contract, "pass_through").input(92u64.to_le_bytes().to_vec()).repeat(3);
+        for (_outcome, err) in script.run().outcomes {
+            if let Some(err) = err {
+                println!("{}", err);
+            }
+        }
+    }
+}
