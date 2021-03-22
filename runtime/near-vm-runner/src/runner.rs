@@ -67,10 +67,12 @@ impl WasmMachine {
         WasmMachine { contract_caller: None, preloaded: HashMap::new() }
     }
 
-    pub fn preload(&mut self, preload_requests: Vec<ContractCallPrepareRequest>) {
+    pub fn preload(&mut self, preload_requests: Vec<(CryptoHash, ContractCallPrepareRequest)>) {
         let contract_caller = self.contract_caller.get_or_insert_with(|| ContractCaller::new(2));
-        let preload_results = contract_caller.preload(preload_requests, VMKind::default());
-        self.preloaded.extend(preload_results);
+        let (ids, requests): (Vec<CryptoHash>, Vec<ContractCallPrepareResult>) =
+            preload_requests.into_iter().unzip();
+        let preload_results = contract_caller.preload(requests, VMKind::default());
+        self.preloaded.extend(ids.into_iter().zip(preload_results));
     }
 
     pub fn run(

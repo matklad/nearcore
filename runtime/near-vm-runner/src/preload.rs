@@ -31,7 +31,6 @@ struct CallInner {
     rx: Receiver<VMCallData>,
 }
 pub struct ContractCallPrepareRequest {
-    pub id: CryptoHash,
     pub code: Arc<ContractCode>,
     pub vm_config: VMConfig,
     pub cache: Option<Arc<dyn CompiledContractCache>>,
@@ -56,8 +55,8 @@ impl ContractCaller {
         &mut self,
         requests: Vec<ContractCallPrepareRequest>,
         vm_kind: VMKind,
-    ) -> HashMap<CryptoHash, ContractCallPrepareResult> {
-        let mut result: HashMap<CryptoHash, ContractCallPrepareResult> = HashMap::new();
+    ) -> Vec<ContractCallPrepareResult> {
+        let mut result: Vec<ContractCallPrepareResult> = Vec::new();
         for request in requests {
             let id = request.id;
             let index = self.prepared.len();
@@ -67,8 +66,7 @@ impl ContractCaller {
                 let tx = tx.clone();
                 move || prepare_in_thread(request, vm_kind, tx)
             });
-            let prev = result.insert(id, ContractCallPrepareResult { handle: index });
-            assert!(prev.is_none());
+            result.push(ContractCallPrepareResult { handle: index });
         }
         result
     }

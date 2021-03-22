@@ -1166,12 +1166,14 @@ impl Runtime {
                                             &apply_state.block_hash,
                                             action_index,
                                         );
-                                        acc.push(ContractCallPrepareRequest {
-                                            id: action_hash,
-                                            code,
-                                            vm_config: apply_state.config.wasm_config.clone(),
-                                            cache: apply_state.cache.clone(),
-                                        });
+                                        acc.push((
+                                            action_hash,
+                                            ContractCallPrepareRequest {
+                                                code,
+                                                vm_config: apply_state.config.wasm_config.clone(),
+                                                cache: apply_state.cache.clone(),
+                                            },
+                                        ));
                                     }
                                 }
                             }
